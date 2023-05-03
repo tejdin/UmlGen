@@ -1,0 +1,170 @@
+@startuml
+'https://plantuml.com/class-diagram
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+skinparam classFontStyle Bold
+hide enum methods
+
+package exos{
+
+'récupère les constructeurs d'une classe sous forme de tableau de Constructor
+class AvoirConstructeur{
+ -constructors : Constructor[]
++AvoirConstructeur(classe : Class)
++getConstructors() : constructors
+}
+
+'récupère les méthodes d'une classe sous forme de tableau de Method
+class AvoirMethodes{
+ -methodes : Method[]
++AvoirMethodes(classe : Class)
++getMethodes() : Method[]
+}
+
+'récupère les champs d'une classe sous forme de tableau de Field
+class AvoirChamps{
+ -champs : Field[]
++AvoirChamps(classe : Class)
++getChamps() : Field[]
+}
+
+'retourne un tableau de chaîne de caractère qui stockera la visibilité d'une méthode/champs/constructeur au même indice que celle-ci dans son tableau
+class Visibilite{
+ -visibilite : String[]
++Visibilite(constructor : Constructor[])
++Visibilite(fields : Field[])
++Visibilite(methods : Method[])
++getVisibilite() : String[]
+}
+
+'retourne un tableau de paramètres
+class Parametres{
+-parametres : Parameter[]
+-type_parametre : String
++Parametres(methods : Method[]))
++Parametres(constructor : Constructor[])
++getParametres() : Parameter[]
+}
+
+'traduit en uml le type d'un champ/méthode/constructeur
+class Type{
+ -type : String[*]
+-_collections: String
+-_map: String
+-liens : String[*]
++<<create>>Type(parameters : Parameter[*] )
++<<create>>Type(methods : Method[*] )
++<<create>>Type(fields : Field[*] )
++getType() : java.lang.String[][*]
+-verifType(type_elem : Method ) : String
+-verifType(type_elem : Field ) : String
+-verifType(type_elem : Parameter ) : String
++getLiens() : String[*]
+}
+
+'verifie si la classe est une énumération/interface
+class ClassType{
+ -Clases_a_traitee : Class
++ClassType(classe : Class))
++GetTypeClass() : String
+}
+
+'assemble tous les morceaux d'uml à partir d'EcrireUml, VerificationSuperCLass et ClassType
+class CreateCodeUml{
+ -chaine : String
+-entete : String
+-tab_methodes : Method[]
+-tab_champs : Field[]
+-tab_constructeur : Constructor[]
+-Typeclass : ClassType
++<<create>>CreateCodeUml(constructeur : AvoirConstructeur, \n champs : AvoirChamps, methodes : AvoirMethodes, \n classe_a_traite : Class)
++getChaine() : String
+}
+
+'sous-classe de visibilité qui rajoute les balise {static}, {abstract}, et {readOnly}
+class Classifiers extends Visibilite{
+ -visibilite : String[]
++Classifiers(constructor : Constructor[])
++Classifiers(methods : Methods[])
++Classifiers(fields : Field[])
+}
+
+'utilise la chaine de caractère UML complète et la stocke dans un fichier
+class Createuml{
+ -fichier : java.io.File
+-chaine : String
+-nom : String
++Createuml(chaine : String, nom : String)
++createfile()
++ecrire()
+}
+
+'traduit en UML les constructeurs/méthodes/champs en y ajoutant leur visibilité et leurs paramètres
+class EcrireUml{
+-chaine_intermediaire : String
+-classifiers : Classifiers
+-string_visibilite : String[]
+-string_type : String[]
+-parametres : Parametres
+-tab_param : Parameter[]
+-type_param : Type
+-stringparam : String[]
+-type : Type
+-nomClasse : String
++EcrireUml(nomClasse : String)
++EcrireConstructeur(constructors : Constructor[]) : String
++EcrireChamps(fields : Field[])) : String
++EcrireMethodes(methods : Method[])) : String
+}
+
+'relie les classes AvoirMethodes/AvoirChamps/AvoirConstructeurs avec la classe CreateCodeUml
+class Maquette{
+ -Uml : CreateCodeUml
+-avoirMethodes : AvoirMethodes
+-avoirChamps : AvoirChamps
+-classename: String
+-avoirConstructeur : AvoirConstructeur
+-classe_maq : Class
++<<create>>Maquette(classe : Class )
++creationFichier()
++Createcode() : String
++affichercode()
++getClassename() : String
+}
+
+class MainS3{
+ +MainS3()
++{static} main(args : String[])
+}
+
+'écrit une ligne qui crée un lien d'héritage entre deux classes
+class VerificationSuperClass{
+- classe_renvoi : String
+- classe : Class
++<<create>> VerificationSuperClass
++ getClass_renvoi() :String
+}
+
+MainS3 --> Maquette
+Maquette ..> AvoirChamps : <<instantiate>>
+Maquette ..> AvoirConstructeur : <<instantiate>>
+Maquette ..> AvoirMethodes : <<instantiate>>
+Maquette ..> CreateCodeUml : <<use>>
+Maquette ..> Createuml : <<use>>
+
+CreateCodeUml ..> EcrireUml : <<use>>
+CreateCodeUml ..>ClassType : <<use>>
+EcrireUml ..> Classifiers : <<use>>
+EcrireUml .> Type : <<use>>
+EcrireUml ..> Parametres : <<use>>
+CreateCodeUml ...> VerificationSuperClass : <<use>>
+Maquette *-- AvoirMethodes : > recense
+Maquette *-- AvoirChamps : > recense
+Maquette *-- AvoirConstructeur : > recense
+
+
+}
+
+
+@enduml
